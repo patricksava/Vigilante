@@ -12,6 +12,8 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
+import br.com.arduino.Arduino;
+
 public class VideoAnalyzer {
 	
 	private final int MAX_SAMPLE_SIZE = 40;
@@ -26,12 +28,14 @@ public class VideoAnalyzer {
 	private ArrayList<Double> learnedSamples;
 	private double normalPattern;
 	private AnalysisSituation lastSituation;
+	private Arduino ard;
 	
 	public enum ModusOperandi{
 		IDLE, LEARN, REAL;
 	}
 
 	public VideoAnalyzer(VideoCapture vc){
+		ard = new Arduino();
 		camera = vc;
 		mode = ModusOperandi.IDLE;
 		lastFrame = new Mat();
@@ -143,6 +147,7 @@ public class VideoAnalyzer {
 	}
 	
 	private BufferedImage operateInIdle(){
+		ard.comunicacaoArduino('1');
 		System.out.println("System in idle");
 		
 		camera.read(currentFrame);
@@ -151,6 +156,7 @@ public class VideoAnalyzer {
 	}
 	
 	private BufferedImage operateInLearning(){
+		ard.comunicacaoArduino('1');
 		Imgproc.GaussianBlur(currentFrame, currentFrame, new Size(15, 15), 0, 0);
 		Mat imageFrame = new Mat();
 		currentFrame.copyTo(imageFrame);
@@ -184,8 +190,10 @@ public class VideoAnalyzer {
 			System.out.println("Percent of black: "+ String.valueOf(avg));
 			
 			if(normalPattern - avg > normalPattern*0.2){
+				ard.comunicacaoArduino('2');
 				setLastSituation(AnalysisSituation.CRITIC);
 			} else {
+				ard.comunicacaoArduino('0');
 				setLastSituation(AnalysisSituation.NORMAL);
 			}
 		}

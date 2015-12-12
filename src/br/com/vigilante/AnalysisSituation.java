@@ -1,6 +1,9 @@
 package br.com.vigilante;
 
+import br.com.arduino.Arduino;
+
 public enum AnalysisSituation {
+
 	IDLE(1), LEARNING(2), NORMAL(3), CRITIC(4);
 	
 	private final int option;
