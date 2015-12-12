@@ -10,7 +10,7 @@ public class Arduino {
    * Construtor da classe Arduino
    */
   public Arduino(){
-      arduino = new ControlePorta("/dev/ttyACM7",9600);//Windows - porta e taxa de transmissão
+      arduino = new ControlePorta("/dev/ttyACM0",9600);//Windows - porta e taxa de transmissão
       
       //arduino = new ControlePorta("/dev/ttyUSB0",9600);//Linux - porta e taxa de transmissão
   }    

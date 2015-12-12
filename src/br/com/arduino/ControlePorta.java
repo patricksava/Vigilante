@@ -27,7 +27,7 @@ public class ControlePorta {
    * Médoto que verifica se a comunicação com a porta serial está ok
    */
   private void initialize() {
-	System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM7");
+	System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
     
 	try {
       //Define uma variável portId do tipo CommPortIdentifier para realizar a comunicação serial
