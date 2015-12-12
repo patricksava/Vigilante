@@ -59,8 +59,9 @@ public class ControlePorta {
     try {
         serialOut.close();
     }catch (IOException e) {
-      JOptionPane.showMessageDialog(null, "Não foi possível fechar porta COM.",
-                "Fechar porta COM", JOptionPane.PLAIN_MESSAGE);
+      //JOptionPane.showMessageDialog(null, "Não foi possível fechar porta COM.",
+      //          "Fechar porta COM", JOptionPane.PLAIN_MESSAGE);
+    	System.err.println("Não foi possível fechar porta COM.");
     }
   }
 
@@ -70,9 +71,10 @@ public class ControlePorta {
   public void enviaDados(int opcao){
     try {
       serialOut.write(opcao);//escreve o valor na porta serial para ser enviado
-    } catch (IOException ex) {
-        JOptionPane.showMessageDialog(null, "Não foi possível enviar o dado. ",
-                "Enviar dados", JOptionPane.PLAIN_MESSAGE);
+    } catch (Exception ex) {
+        //JOptionPane.showMessageDialog(null, "Não foi possível enviar o dado. ",
+        //        "Enviar dados", JOptionPane.PLAIN_MESSAGE);
+    	System.err.println("Não foi possível enviar o dado.");
     }
   } 
 }
