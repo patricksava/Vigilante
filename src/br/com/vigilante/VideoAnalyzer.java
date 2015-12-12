@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -18,8 +17,6 @@ import br.com.arduino.Arduino;
 public class VideoAnalyzer {
 	
 	private final int MAX_SAMPLE_SIZE = 40;
-	private final double FRAMES_PER_SECOND = 10;
-	private final double FRAME_DT = 1000 / FRAMES_PER_SECOND;
 	
 	private VideoCapture camera;
 	private ModusOperandi mode;
@@ -33,7 +30,6 @@ public class VideoAnalyzer {
 	private AnalysisSituation lastSituation;
 	private Arduino ard;
 	private Integer monitoring;
-	private double lastTime;
 	
 	public enum ModusOperandi{
 		IDLE, LEARN, REAL;
@@ -49,7 +45,6 @@ public class VideoAnalyzer {
 		sampleCounter = 0;
 		normalPattern = -1;
 		ard = new Arduino();
-		lastTime = 0;
 		setLastSituation(AnalysisSituation.IDLE);
 		monitoring = 0;
 	}
@@ -134,24 +129,19 @@ public class VideoAnalyzer {
 	}
 
 	public BufferedImage operate(){
-		double currTime = (new Date()).getTime();
-		double timeDiff = currTime - lastTime;
-		if (timeDiff > FRAME_DT) {
-			lastTime = currTime;
-			if(camera.read(currentFrame)){
-				if(lastFrame == null){
-					lastFrame = new Mat();
-					Imgproc.GaussianBlur(currentFrame, currentFrame, new Size(15, 15), 0, 0);
-					currentFrame.copyTo(lastFrame);
-				}
-				switch(mode){
-					case IDLE:
-						return operateInIdle();
-					case LEARN:
-						return operateInLearning();
-					case REAL:
-						return operateInReal();
-				}
+		if(camera.read(currentFrame)){
+			if(lastFrame == null){
+				lastFrame = new Mat();
+				Imgproc.GaussianBlur(currentFrame, currentFrame, new Size(15, 15), 0, 0);
+				currentFrame.copyTo(lastFrame);
+			}
+			switch(mode){
+				case IDLE:
+					return operateInIdle();
+				case LEARN:
+					return operateInLearning();
+				case REAL:
+					return operateInReal();
 			}
 		}
 		return MatToBufferedImage(lastFrame);
