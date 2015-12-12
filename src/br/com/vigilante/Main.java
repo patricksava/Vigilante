@@ -16,8 +16,6 @@ import javax.swing.JPanel;
 import org.opencv.core.Core;
 import org.opencv.videoio.VideoCapture;
 
-import br.com.arduino.*;
-
 public class Main extends JFrame{
 	private static final long serialVersionUID = 1L;
 
