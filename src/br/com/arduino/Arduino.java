@@ -1,7 +1,7 @@
 package br.com.arduino;
 
 /**
- * @author klauder
+ * @author xanwerneck
  */
 public class Arduino {
   private ControlePorta arduino;

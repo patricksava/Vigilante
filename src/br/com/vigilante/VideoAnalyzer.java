@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -18,8 +17,6 @@ import br.com.arduino.Arduino;
 public class VideoAnalyzer {
 	
 	private final int MAX_SAMPLE_SIZE = 40;
-	private final double FRAMES_PER_SECOND = 10;
-	private final double FRAME_DT = 1000 / FRAMES_PER_SECOND;
 	
 	private VideoCapture camera;
 	private ModusOperandi mode;
@@ -33,7 +30,6 @@ public class VideoAnalyzer {
 	private AnalysisSituation lastSituation;
 	private Arduino ard;
 	private Integer monitoring;
-	private double lastTime;
 	
 	public enum ModusOperandi{
 		IDLE, LEARN, REAL;
@@ -49,7 +45,6 @@ public class VideoAnalyzer {
 		sampleCounter = 0;
 		normalPattern = -1;
 		ard = new Arduino();
-		lastTime = 0;
 		setLastSituation(AnalysisSituation.IDLE);
 		monitoring = 0;
 	}
@@ -70,6 +65,10 @@ public class VideoAnalyzer {
 		if(mode != this.mode){
 			if(mode == ModusOperandi.REAL && normalPattern < 0){
 				return false;
+			}
+			if(mode == ModusOperandi.LEARN){
+				learnedSamples = new ArrayList<Double>();
+				normalPattern = -1;
 			}
 			this.mode = mode;
 		}
@@ -133,45 +132,51 @@ public class VideoAnalyzer {
 		this.lastSituation = lastSituation;
 	}
 
-	public BufferedImage operate(){
-		double currTime = (new Date()).getTime();
-		double timeDiff = currTime - lastTime;
-		if (timeDiff > FRAME_DT) {
-			lastTime = currTime;
-			if(camera.read(currentFrame)){
-				if(lastFrame == null){
-					lastFrame = new Mat();
-					Imgproc.GaussianBlur(currentFrame, currentFrame, new Size(15, 15), 0, 0);
-					currentFrame.copyTo(lastFrame);
-				}
-				switch(mode){
-					case IDLE:
-						return operateInIdle();
-					case LEARN:
-						return operateInLearning();
-					case REAL:
-						return operateInReal();
-				}
+	public ArrayList<BufferedImage> operate(){
+		if(camera.read(currentFrame)){
+			if(lastFrame == null){
+				lastFrame = new Mat();
+				Imgproc.GaussianBlur(currentFrame, currentFrame, new Size(15, 15), 0, 0);
+				currentFrame.copyTo(lastFrame);
+			}
+			switch(mode){
+				case IDLE:
+					return operateInIdle();
+				case LEARN:
+					return operateInLearning();
+				case REAL:
+					return operateInReal();
 			}
 		}
-		return MatToBufferedImage(lastFrame);
+		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+		images.add(MatToBufferedImage(lastFrame));
+		images.add(MatToBufferedImage(currentFrame));
+		
+		return images;
 	}
 	
-	private BufferedImage operateInIdle(){
+	private ArrayList<BufferedImage> operateInIdle(){
 		ard.comunicacaoArduino('1');
 		System.out.println("System in idle");
 		camera.read(currentFrame);
 		preProcessFrame();
 		currentFrame.copyTo(lastFrame);
-		return MatToBufferedImage(currentFrame);
+		
+		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+		images.add(MatToBufferedImage(lastFrame));
+		images.add(MatToBufferedImage(currentFrame));
+		
+		return images;
 	}
 	
-	private BufferedImage operateInLearning(){
+	private ArrayList<BufferedImage> operateInLearning(){
 		ard.comunicacaoArduino('1');
 		preProcessFrame();
 		Mat imageFrame = new Mat();
 		currentFrame.copyTo(imageFrame);
 		Core.absdiff(currentFrame, lastFrame, imageFrame);
+		this.setLastSituation(AnalysisSituation.LEARNING);
+
 		BufferedImage image = MatToBufferedImage(imageFrame);
 		double blackPercentage = evaluateBlackPercent(image);
 		
@@ -181,13 +186,18 @@ public class VideoAnalyzer {
 			normalPattern = evaluateNormalPattern();
 			System.out.println("Evaluated normal pattern: " + String.valueOf(normalPattern));
 		}
-
+		
 		this.setMode(ModusOperandi.REAL);
 		currentFrame.copyTo(lastFrame);
-		return image;
+		
+		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+		images.add(MatToBufferedImage(lastFrame));
+		images.add(MatToBufferedImage(currentFrame));
+		
+		return images;
 	}
 	
-	private BufferedImage operateInReal(){
+	private ArrayList<BufferedImage> operateInReal(){
 		preProcessFrame();
 		Mat imageFrame = new Mat();
 		currentFrame.copyTo(imageFrame);
@@ -221,7 +231,11 @@ public class VideoAnalyzer {
 		currentFrame.copyTo(lastFrame);
 		sampleCounter = (++sampleCounter) % 10;
 		
-		return image;
+		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+		images.add(image);
+		images.add(MatToBufferedImage(currentFrame));
+		
+		return images;
 	}
 	
 	private void preProcessFrame() {
@@ -238,6 +252,13 @@ public class VideoAnalyzer {
 		} else if (frame.channels() == 3) {
 			type = BufferedImage.TYPE_3BYTE_BGR;
 		}
+		
+		frame = resizeFrame(frame);
+		
+		if(frame.size().area() == 0.0)
+			frame = Mat.zeros(new Size (400, 300), frame.type());
+		
+		
 		BufferedImage image = new BufferedImage(frame.width(), frame.height(), type);
 		WritableRaster raster = image.getRaster();
 		DataBufferByte dataBuffer = (DataBufferByte) raster.getDataBuffer();
@@ -245,6 +266,21 @@ public class VideoAnalyzer {
 		frame.get(0, 0, data);
 
 		return image;
+	}
+	
+	public static Mat resizeFrame(Mat frame){
+		Mat newFrame = new Mat();
+		
+		if(frame.size().area() > 1.0){
+			double widthFactor = 400.0/frame.width();
+			double heightFactor = 300.0/frame.height();
+		
+			Imgproc.resize(frame, newFrame, new Size(400, 300), widthFactor, heightFactor, Imgproc.INTER_LINEAR);
+			
+			return newFrame;
+		}
+		
+		return frame;
 	}
 	
 	public static double average(double[] samples){
