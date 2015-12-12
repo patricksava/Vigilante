@@ -29,6 +29,7 @@ public class VideoAnalyzer {
 	private double normalPattern;
 	private AnalysisSituation lastSituation;
 	private Arduino ard;
+	private Integer monitoring;
 	
 	public enum ModusOperandi{
 		IDLE, LEARN, REAL;
@@ -45,6 +46,7 @@ public class VideoAnalyzer {
 		sampleCounter = 0;
 		normalPattern = -1;
 		setLastSituation(AnalysisSituation.IDLE);
+		monitoring = 0;
 	}
 
 	public VideoCapture getCamera() {
@@ -191,10 +193,19 @@ public class VideoAnalyzer {
 			
 			if(normalPattern - avg > normalPattern*0.2){
 				ard.comunicacaoArduino('2');
+				if (monitoring == 0) {
+					try {
+						Monitor.incluir();
+					} catch (Exception e) {
+						
+					}
+				}	
+				monitoring = 1;
 				setLastSituation(AnalysisSituation.CRITIC);
 			} else {
 				ard.comunicacaoArduino('0');
 				setLastSituation(AnalysisSituation.NORMAL);
+				monitoring = 0;
 			}
 		}
 		currentFrame.copyTo(lastFrame);
