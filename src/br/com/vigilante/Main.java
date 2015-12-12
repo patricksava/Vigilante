@@ -57,7 +57,7 @@ public class Main extends JFrame{
 		
 		while(true){
 			imgPanel.image = videoAnalyzer.operate();
-			System.out.println("Situation: " + videoAnalyzer.getLastSituation().getOptionName());
+			//System.out.println("Situation: " + videoAnalyzer.getLastSituation().getOptionName());
 			imgPanel.repaint();
 		}
 		

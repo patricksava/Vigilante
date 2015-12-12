@@ -216,6 +216,7 @@ public class VideoAnalyzer {
 				setLastSituation(AnalysisSituation.NORMAL);
 				monitoring = 0;
 			}
+			System.out.println("Situation: " + this.lastSituation.getOptionName());
 		}
 		currentFrame.copyTo(lastFrame);
 		sampleCounter = (++sampleCounter) % 10;
