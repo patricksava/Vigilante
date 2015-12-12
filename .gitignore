@@ -1,0 +1,6 @@
+lib/
+.project
+*.mov
+bin/
+.classpath
+.settings/
