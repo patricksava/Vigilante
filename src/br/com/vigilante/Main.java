@@ -74,8 +74,8 @@ public class Main extends JFrame{
 		System.out.println("Starting Vigilante system");
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
-		//VideoCapture vc = new VideoCapture(0); //WEBCAM
-		VideoCapture vc = new VideoCapture("HarlemShake.mp4");
+		VideoCapture vc = new VideoCapture(0); //WEBCAM
+		//VideoCapture vc = new VideoCapture("HarlemShake.mp4");
 		//VideoCapture vc = new VideoCapture("ExplosaoRestaurante.mp4");
 		//VideoCapture vc = new VideoCapture("TrainCrash.mp4");
 		//VideoCapture vc = new VideoCapture("rush_01.mov");
@@ -156,14 +156,14 @@ public class Main extends JFrame{
 		modusOperandi.add(realMenuItem);
 		
 		ButtonGroup sensibilityGroup = new ButtonGroup();
-		JRadioButtonMenuItem senseButton10 = new JRadioButtonMenuItem("10%");
+		final JRadioButtonMenuItem senseButton10 = new JRadioButtonMenuItem("10%");
 		senseButton10.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				senseButton10.setSelected(true);
 				videoAnalyzer.setSensibility(0.1);
 			}
 		});
-		JRadioButtonMenuItem senseButton20 = new JRadioButtonMenuItem("20%");
+		final JRadioButtonMenuItem senseButton20 = new JRadioButtonMenuItem("20%");
 		senseButton20.setSelected(true);
 		senseButton20.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -171,21 +171,21 @@ public class Main extends JFrame{
 				videoAnalyzer.setSensibility(0.2);
 			}
 		});
-		JRadioButtonMenuItem senseButton40 = new JRadioButtonMenuItem("40%");
+		final JRadioButtonMenuItem senseButton40 = new JRadioButtonMenuItem("40%");
 		senseButton40.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				senseButton40.setSelected(true);
 				videoAnalyzer.setSensibility(0.4);
 			}
 		});
-		JRadioButtonMenuItem senseButton50 = new JRadioButtonMenuItem("50%");
+		final JRadioButtonMenuItem senseButton50 = new JRadioButtonMenuItem("50%");
 		senseButton50.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				senseButton50.setSelected(true);
 				videoAnalyzer.setSensibility(0.5);
 			}
 		});
-		JRadioButtonMenuItem senseButton75 = new JRadioButtonMenuItem("75%");
+		final JRadioButtonMenuItem senseButton75 = new JRadioButtonMenuItem("75%");
 		senseButton75.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				senseButton75.setSelected(true);

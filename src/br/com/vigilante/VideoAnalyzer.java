@@ -226,7 +226,7 @@ public class VideoAnalyzer {
 					try {
 						Monitor.incluir();
 					} catch (Exception e) {
-						
+						System.out.println("Not saved: "+ e.getMessage());
 					}
 				}	
 				monitoring = 1;

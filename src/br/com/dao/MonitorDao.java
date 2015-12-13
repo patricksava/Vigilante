@@ -19,9 +19,10 @@ public class MonitorDao {
                 "(" +
                 "moment_capture," +
                 "is_true," +
-                "camera_id" +
+                "camera_id," +
+                "is_verified"+
                 ")" +
-                " values (now(),false,1)";
+                " values (now(),false,1,false)";
 
         try {
 
