@@ -30,6 +30,7 @@ public class VideoAnalyzer {
 	private AnalysisSituation lastSituation;
 	private Arduino ard;
 	private Integer monitoring;
+	private double sensibility;
 	
 	public enum ModusOperandi{
 		IDLE, LEARN, REAL;
@@ -44,6 +45,7 @@ public class VideoAnalyzer {
 		learnedSamples = new ArrayList<Double>();
 		sampleCounter = 0;
 		normalPattern = -1;
+		sensibility = 0.2;
 		ard = new Arduino();
 		setLastSituation(AnalysisSituation.IDLE);
 		monitoring = 0;
@@ -132,6 +134,14 @@ public class VideoAnalyzer {
 		this.lastSituation = lastSituation;
 	}
 
+	public double getSensibility() {
+		return sensibility;
+	}
+
+	public void setSensibility(double sensibility) {
+		this.sensibility = sensibility;
+	}
+
 	public ArrayList<BufferedImage> operate(){
 		if(camera.read(currentFrame)){
 			if(lastFrame == null){
@@ -210,7 +220,7 @@ public class VideoAnalyzer {
 			double avg = average(samples);
 			System.out.println("Percent of black: "+ String.valueOf(avg));
 			
-			if(normalPattern - avg > normalPattern*0.2){
+			if(normalPattern - avg > normalPattern*sensibility){
 				ard.comunicacaoArduino('2');
 				if (monitoring == 0) {
 					try {

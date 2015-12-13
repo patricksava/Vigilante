@@ -13,12 +13,14 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 
 import org.opencv.core.Core;
 import org.opencv.videoio.VideoCapture;
@@ -29,7 +31,6 @@ public class Main extends JFrame{
 	private static JFrame window;
 	private static ImagePanel imgPanel;
 	private static ImagePanel origImgPanel;
-	private static JPanel alertPanel;
 	
 	private static VideoAnalyzer videoAnalyzer;
 
@@ -123,16 +124,13 @@ public class Main extends JFrame{
 		origImgPanel.setSize(400, 300);
 		origImgPanel.setLocation(450, 100);
 		
-		/*alertPanel = new JPanel();
-		alertPanel.setLocation(200, 500);
-		alertPanel.setSize(60, 60);
-		alertPanel.setVisible(true);
-		alertPanel.setBackground(Color.BLACK);*/
-		
 		JMenuBar menuBar = new JMenuBar();
 
 		JMenu modusOperandi = new JMenu("Modus Operandi");
 		menuBar.add(modusOperandi);
+		
+		JMenu senseMenu = new JMenu("Sensibilidade");
+		menuBar.add(senseMenu);
 		
 		JMenuItem idleMenuItem = new JMenuItem("Idle");
 		idleMenuItem.addActionListener(new ActionListener() {
@@ -156,6 +154,56 @@ public class Main extends JFrame{
 		modusOperandi.add(idleMenuItem);
 		modusOperandi.add(learningMenuItem);
 		modusOperandi.add(realMenuItem);
+		
+		ButtonGroup sensibilityGroup = new ButtonGroup();
+		JRadioButtonMenuItem senseButton10 = new JRadioButtonMenuItem("10%");
+		senseButton10.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				senseButton10.setSelected(true);
+				videoAnalyzer.setSensibility(0.1);
+			}
+		});
+		JRadioButtonMenuItem senseButton20 = new JRadioButtonMenuItem("20%");
+		senseButton20.setSelected(true);
+		senseButton20.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				senseButton20.setSelected(true);
+				videoAnalyzer.setSensibility(0.2);
+			}
+		});
+		JRadioButtonMenuItem senseButton40 = new JRadioButtonMenuItem("40%");
+		senseButton40.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				senseButton40.setSelected(true);
+				videoAnalyzer.setSensibility(0.4);
+			}
+		});
+		JRadioButtonMenuItem senseButton50 = new JRadioButtonMenuItem("50%");
+		senseButton50.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				senseButton50.setSelected(true);
+				videoAnalyzer.setSensibility(0.5);
+			}
+		});
+		JRadioButtonMenuItem senseButton75 = new JRadioButtonMenuItem("75%");
+		senseButton75.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				senseButton75.setSelected(true);
+				videoAnalyzer.setSensibility(0.75);
+			}
+		});
+		
+		sensibilityGroup.add(senseButton10);
+		sensibilityGroup.add(senseButton20);
+		sensibilityGroup.add(senseButton40);
+		sensibilityGroup.add(senseButton50);
+		sensibilityGroup.add(senseButton75);
+		
+		senseMenu.add(senseButton10);
+		senseMenu.add(senseButton20);
+		senseMenu.add(senseButton40);
+		senseMenu.add(senseButton50);
+		senseMenu.add(senseButton75);
 		
 		window.setJMenuBar(menuBar);
 		
@@ -190,8 +238,6 @@ public class Main extends JFrame{
 		situationPanel.setAlignmentX(LEFT_ALIGNMENT);
 		situationPanel.setLayout(new BoxLayout(situationPanel, BoxLayout.PAGE_AXIS));
 		situationPanel.setBackground(Color.RED);
-		
-		//window.add(alertPanel);
 		
 		window.getContentPane().add(logoContainerPanel, BorderLayout.PAGE_START);
 		window.getContentPane().add(videoPanel, BorderLayout.CENTER);
